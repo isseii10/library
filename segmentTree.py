@@ -26,9 +26,7 @@ class segmentTree:
         for i in range(self.num_end_leaves)[::-1]:
             self.tree[i] = self.operator(self.tree[2*i], self.tree[2*i+1])
 
-
-
-
+            
     def update(self, x, val):
         """
         :param x: 更新するidx
@@ -40,21 +38,23 @@ class segmentTree:
             leaf_x //= 2
             self.tree[leaf_x] = self.operator(self.tree[leaf_x*2], self.tree[leaf_x*2+1])
             # operaterがminだったりsumだったりする
-
-    def query(self, left, right, arr_idx=1, leaf_left = 0, depth = 0):
-            # arr_idx : 木のインデックス。最初根の１
-            #leaf_left : 木のインデックスに対して、それが表す葉がカバーする範囲の左
-            #depth : 木の深さ
-        width_of_floor = self.num_end_leaves//(2**depth)
-        leaf_right = leaf_left + width_of_floor -1
-
-        if leaf_left > right or leaf_right < left:
-            return self.identity
-        elif leaf_left >= right and leaf_right < left:
-            return self.tree[arr_idx]
-        else:
-            val_l = self.query(left, right, 2**arr_idx, leaf_left, depth+1)
-            val_r = self.query(left, right, 2*arr_idx+1, leaf_left+width_of_floor//2, depth+1)
-            return self.operator(val_l, val_r)
-
-#queryが再帰でもしかしたらよくない
+    
+    
+    def query(self, left, right):
+        """
+        :param left: queryの左
+        :param right: queryの右
+        """
+        left += self.num_end_leaves
+        right += self.num_end_leaves
+        val_l = val_r = self.identity
+        while right - left > 0:
+            if left & 1:
+                val_l = self.operator(val_l, self.tree[left])
+                left += 1
+            if right & 1:
+                right -= 1
+                val_r = self.operator(self.tree[right], val_r)
+            left >>= 1
+            right >>= 1
+        return self.operator(val_l, val_r)
