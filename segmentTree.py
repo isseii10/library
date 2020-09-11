@@ -29,7 +29,7 @@ class segmentTree:
             
     def update(self, x, val):
         """
-        :param x: 更新するidx
+        :param x: 更新するidx(0-indexed)
         :param val: 更新する値
         """
         leaf_x = x + self.num_end_leaves
@@ -42,10 +42,16 @@ class segmentTree:
     
     def query(self, left, right):
         """
-        :param left: queryの左
-        :param right: queryの右
+        :param left: queryの左idx(1-indexed)
+        :param right: queryの右idx(1-indexed)
+        大体queryは1-indexedなので、0-indexedにして
+        left_0 = left - 1
+        right_0 = right - 1
+        半閉半開を考えるので、[left_0, right_0+1) つまり、[left_0, right)
+        leftだけ-1する
         """
         left += self.num_end_leaves
+        left -= 1
         right += self.num_end_leaves
         val_l = val_r = self.identity
         while right - left > 0:
